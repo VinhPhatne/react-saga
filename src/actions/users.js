@@ -20,7 +20,7 @@ export const getUsersSuccess = ({ items }) => ({
 export const createUserRequest = ({ firstName, lastName }) => ({
   type: Types.CREATE_USER_REQUEST,
   payload: {
-    //userId: Date.now(),
+    id: Date.now(),
     firstName,
     lastName,
   },

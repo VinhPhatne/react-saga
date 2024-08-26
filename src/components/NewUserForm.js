@@ -1,62 +1,78 @@
-import React, {Component} from 'react';
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import React, { Component } from "react";
+import { Button, Form, Input } from "antd";
 
 class NewUserForm extends Component {
+  state = {
+    firstName: "",
+    lastName: "",
+  };
 
-    state = {
-        firstName: '',
-        lastName: ''
-    };
+  // This function is triggered when the form is submitted
+  handleSubmit = (values) => {
+    const { firstName, lastName } = values;
 
-    handleSubmit = e => {
-        e.preventDefault();
+    this.props.onSubmit({
+      firstName,
+      lastName,
+    });
 
-        this.props.onSubmit({
-            firstName : this.state.firstName,
-            lastName : this.state.lastName
-        });
+    // Reset the form fields after submission
+    this.setState({
+      firstName: "",
+      lastName: "",
+    });
+  };
 
-        this.setState({
-            firstName: '',
-            lastName: ''
-        });
-    };
+  render() {
+    return (
+      <Form
+        onFinish={this.handleSubmit} // Use onFinish to handle form submission
+        name="wrap"
+        labelAlign="left"
+        labelWrap
+        layout="vertical"
+        colon={false}
+        style={{ maxWidth: 600, marginTop: "30px" }}
+        initialValues={this.state} // Set the initial values of the form fields
+        requiredMark={false}
+      >
+        <Form.Item
+          label="First Name"
+          name="firstName"
+          rules={[{ required: true, message: "Please input your first name!" }]}
+        >
+          <Input
+            value={this.state.firstName}
+            onChange={(e) => this.setState({ firstName: e.target.value })}
+            style={{ height: "40px" }}
+          />
+        </Form.Item>
 
-    handleFirstNameChange = e => {
-        this.setState({
-            firstName: e.target.value
-        });
-    };
+        <Form.Item
+          label="Last Name"
+          name="lastName"
+          rules={[{ required: true, message: "Please input your last name!" }]}
+        >
+          <Input
+            value={this.state.lastName}
+            onChange={(e) => this.setState({ lastName: e.target.value })}
+            style={{ height: "40px", marginBottom: "0px" }}
+          />
+        </Form.Item>
 
-    handleLastNameChange = e => {
-        this.setState({
-            lastName: e.target.value
-        });
-    };
-
-    render() {
-        return (
-            <Form onSubmit={this.handleSubmit}>
-                <FormGroup>
-                    <Label>
-                        First name
-                    </Label>
-                    <Input required type="text" value={this.state.firstName} onChange={this.handleFirstNameChange} />
-                </FormGroup>
-                <FormGroup>
-                    <Label>
-                        Last name
-                    </Label>
-                    <Input required type="text" value={this.state.lastName} onChange={this.handleLastNameChange} />
-                </FormGroup>
-                <FormGroup>
-                    <Button block outline type="submit" color="primary">
-                        Create
-                    </Button>
-                </FormGroup>
-            </Form>
-        );
-    }
+        <Form.Item>
+          <Button
+            block
+            type="primary"
+            htmlType="submit"
+            style={{ height: "40px" }}
+          >
+            Create
+          </Button>
+        </Form.Item>
+      </Form>
+    );
+  }
 }
 
 export default NewUserForm;
