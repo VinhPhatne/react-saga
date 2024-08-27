@@ -1,52 +1,102 @@
-import React, {Component} from 'react';
-import NewUserForm from './NewUserForm';
-import UserList from './UserList';
-import {connect} from 'react-redux';
-import {getUsersRequest, createUserRequest, deleteUserRequest, usersError} from '../actions/users';
-import {Alert} from 'reactstrap';
+import React, { Component } from "react";
+import NewUserForm from "./NewUserForm";
+import UserList from "./UserList";
+import { connect } from "react-redux";
+import {
+  getUsersRequest,
+  createUserRequest,
+  deleteUserRequest,
+  updateUserRequest,
+  usersError,
+} from "../actions/users";
+import { Alert, notification } from "antd";
+import EditModal from "./EditModal";
 
 class App extends Component {
-    constructor(props){
-        super(props);
+  state = {
+    editingUser: null,
+    isModalVisible: false,
+  };
 
-        this.props.getUsersRequest();
+  componentDidMount() {
+    this.props.getUsersRequest();
+  }
+
+  handleSubmit = ({ id, firstName, lastName }) => {
+    if (id) {
+      this.props.updateUserRequest({ id, firstName, lastName });
+      notification.success({
+        message: "User Updated",
+        description: "The user has been successfully updated.",
+      });
+    } else {
+      this.props.createUserRequest({ firstName, lastName });
+      notification.success({
+        message: "User Created",
+        description: "A new user has been successfully created.",
+      });
     }
+    this.setState({ editingUser: null, isModalVisible: false });
+  };
 
-    handleSubmit = ({firstName, lastName}) => {
-        this.props.createUserRequest({
-            firstName,
-            lastName
-        });
-    };
+  handleDeleteUserClick = (userId) => {
+    this.props.deleteUserRequest(userId);
+    notification.success({
+      message: "User Deleted",
+      description: "The user has been successfully deleted.",
+    });
+  };
 
-    handleDeleteUserClick = (userId) => {
-        this.props.deleteUserRequest(userId);
-    };
+  handleEditUserClick = (user) => {
+    this.setState({ editingUser: user, isModalVisible: true });
+  };
 
-    handleCloseAlert = () => {
-        this.props.usersError({
-            error: ''
-        });
-    };
+  handleCloseAlert = () => {
+    this.props.usersError({ error: "" });
+  };
 
-    render(){
-        const users = this.props.users;
-        return (
-            <div style={{margin: '0 auto', padding: '20px', maxWidth: '600px'}}>
+  handleCancel = () => {
+    this.setState({ isModalVisible: false });
+  };
 
-                <Alert color="danger" isOpen={!!this.props.users.error} toggle={this.handleCloseAlert}>
-                    {this.props.users.error}
-                </Alert>
-                <NewUserForm onSubmit={this.handleSubmit} />
-                <UserList onDeleteUser={this.handleDeleteUserClick} users={users.items}/>
-            </div>
-        );
-    }
+  render() {
+    const { users } = this.props;
+    const { isModalVisible, editingUser } = this.state;
+    return (
+      <div style={{ margin: "0 auto", padding: "20px", maxWidth: "600px" }}>
+        {this.props.users.error && (
+          <Alert
+            type="error"
+            message={this.props.users.error}
+            banner
+            closable
+            onClose={this.handleCloseAlert}
+            style={{ marginBottom: "20px" }}
+          />
+        )}
+
+        <NewUserForm onSubmit={this.handleSubmit} />
+
+        <EditModal
+          visible={isModalVisible}
+          onCancel={this.handleCancel}
+          onSubmit={this.handleSubmit}
+          editingUser={editingUser}
+        />
+        <UserList
+          onDeleteUser={this.handleDeleteUserClick}
+          onEditUser={this.handleEditUserClick}
+          users={users.items}
+        />
+      </div>
+    );
+  }
 }
 
-export default connect(({users}) => ({users}), {
-    getUsersRequest,
-    createUserRequest,
-    deleteUserRequest,
-    usersError
+export default connect(({ users }) => ({ users }), {
+  getUsersRequest,
+  createUserRequest,
+  deleteUserRequest,
+  updateUserRequest,
+  usersError,
 })(App);

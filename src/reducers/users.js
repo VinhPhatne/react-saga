@@ -31,6 +31,18 @@ export default function users(state = INITIAL_STATE, action) {
       };
     }
 
+    case Types.UPDATE_USER_REQUEST: {
+      const updatedItems = state.items.map(user =>
+        user.id === action.payload.id
+          ? { ...user, ...action.payload }
+          : user
+      );
+      return {
+        ...state,
+        items: updatedItems,
+      };
+    }
+
     case Types.USERS_ERROR: {
       return {
         ...state,
