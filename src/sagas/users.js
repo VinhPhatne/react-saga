@@ -77,10 +77,28 @@ function* watchCreateUserRequest() {
   yield takeLatest(actions.Types.CREATE_USER_REQUEST, createUser);
 }
 
+function* updateUser(action) {
+  try {
+    yield call(api.updateUser, action.payload);
+    console.log("updated user successfully");
+  } catch (e) {
+    yield put(
+      actions.usersError({
+        error: "An error occurred when trying to update the user",
+      })
+    );
+  }
+}
+
+function* watchUpdateUserRequest() {
+  yield takeLatest(actions.Types.UPDATE_USER_REQUEST, updateUser);
+}
+
 const userSagas = [
   fork(watchGetUsersRequest),
   fork(watchCreateUserRequest),
   fork(watchDeleteUserRequest),
+  fork(watchUpdateUserRequest),
 ];
 
 export default userSagas;

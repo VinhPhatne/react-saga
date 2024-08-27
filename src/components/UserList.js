@@ -1,15 +1,15 @@
 import React from "react";
-import { List, Button, message, Popconfirm } from 'antd';
+import { List, Button, Modal, message, Popconfirm } from "antd";
 
-const UserList = ({ users, onDeleteUser }) => {
+const UserList = ({ users, onDeleteUser, onEditUser }) => {
   const confirm = (userId) => {
     console.log(userId);
-    onDeleteUser(userId); 
-    message.success("Deleted user");
+    onDeleteUser(userId);
+    //message.success("Deleted user");
   };
   const cancel = (e) => {
     console.log(e);
-    message.error("Cancel Delete");
+    //message.error("Cancel Delete");
   };
 
   return (
@@ -27,14 +27,22 @@ const UserList = ({ users, onDeleteUser }) => {
         return 0;
       })}
       renderItem={(user) => (
-        // Đổi ListGroupItem thành List.Item của Ant Design
         <List.Item key={user.id}>
-          <section style={{ display: 'flex', width: '100%' }}>
+          <section style={{ display: "flex", width: "100%" }}>
             <div style={{ flexGrow: 1 }}>
               {user.firstName} {user.lastName}
             </div>
             <div>
-              {/* Không thay đổi Popconfirm vì nó đã là của Ant Design */}
+              <Button
+                type="primary"
+                style={{ marginRight: "16px" }}
+                onClick={() => {
+                  console.log("Edit user >>> ", user);
+                  onEditUser(user);
+                }}
+              >
+                Edit
+              </Button>
               <Popconfirm
                 title="Delete User"
                 description="Are you sure to delete this user?"
@@ -43,8 +51,9 @@ const UserList = ({ users, onDeleteUser }) => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Button danger>Delete</Button>
+                <Button danger >Delete</Button>
               </Popconfirm>
+
             </div>
           </section>
         </List.Item>
