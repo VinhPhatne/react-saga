@@ -1,7 +1,7 @@
 import React from "react";
-import { List, Button, Modal, message, Popconfirm } from "antd";
+import { List, Button, Popconfirm } from "antd";
 
-const UserList = ({ users, onDeleteUser, onEditUser }) => {
+const UserList = ({ users, onDeleteUser, onEditUser, editingUser }) => {
   const confirm = (userId) => {
     console.log(userId);
     onDeleteUser(userId);
@@ -43,6 +43,7 @@ const UserList = ({ users, onDeleteUser, onEditUser }) => {
               >
                 Edit
               </Button>
+
               <Popconfirm
                 title="Delete User"
                 description="Are you sure to delete this user?"
@@ -51,9 +52,8 @@ const UserList = ({ users, onDeleteUser, onEditUser }) => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Button danger >Delete</Button>
+                <Button danger>Delete</Button>
               </Popconfirm>
-
             </div>
           </section>
         </List.Item>
