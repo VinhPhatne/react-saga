@@ -10,13 +10,23 @@ import {
   usersError,
 } from "../actions/users";
 import { Alert, notification } from "antd";
-import { useDisclosure } from "@chakra-ui/react";
-import EditModal from "./EditModal"; 
+// import { useDisclosure } from "@chakra-ui/react";
+import EditModal from "./EditModal";
+import useDisclosure from "../hook/useDisclosure";
+import { useNavigate } from "react-router-dom";
 
-const App = ({ users, getUsersRequest, createUserRequest, deleteUserRequest, updateUserRequest, usersError }) => {
-  
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const App = ({
+  users,
+  getUsersRequest,
+  createUserRequest,
+  deleteUserRequest,
+  updateUserRequest,
+  usersError,
+}) => {
+  const { isOpen, openModal, closeModal } = useDisclosure();
   const [editingUser, setEditingUser] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getUsersRequest();
@@ -38,7 +48,7 @@ const App = ({ users, getUsersRequest, createUserRequest, deleteUserRequest, upd
       });
     }
     setEditingUser(null);
-    onClose();
+    closeModal();
   };
 
   const handleDeleteUserClick = (userId) => {
@@ -50,8 +60,12 @@ const App = ({ users, getUsersRequest, createUserRequest, deleteUserRequest, upd
   };
 
   const handleEditUserClick = (user) => {
-    setEditingUser(user);
-    onOpen(); 
+    // setEditingUser(user);
+    // openModal();
+    
+    //navigate(`/user/${user.id}`);
+  
+    navigate(`/user/${user.id}`, { state: { user } })
   };
 
   const handleCloseAlert = () => {
@@ -75,13 +89,13 @@ const App = ({ users, getUsersRequest, createUserRequest, deleteUserRequest, upd
 
       <EditModal
         visible={isOpen}
-        onCancel={onClose}
+        onCancel={closeModal}
         onSubmit={handleSubmit}
         editingUser={editingUser}
       />
       <UserList
         onDeleteUser={handleDeleteUserClick}
-        onEditUser={handleEditUserClick} 
+        onEditUser={handleEditUserClick}
         users={users.items}
       />
     </div>
