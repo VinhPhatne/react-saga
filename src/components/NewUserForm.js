@@ -12,9 +12,7 @@ const NewUserForm = ({ onSubmit }) => {
       firstName,
       lastName,
     });
-
     
-
     setFirstName('');
     setLastName('');
   };
