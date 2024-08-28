@@ -9,6 +9,7 @@ import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import rootSaga from "./sagas";
 import "bootstrap/dist/css/bootstrap.min.css";
+import AppRouter from "./components/AppRouter";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -23,7 +24,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <AppRouter />
     </Provider>
   </React.StrictMode>
 );

@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import NewUserForm from "./NewUserForm";
 import UserList from "./UserList";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import {
   getUsersRequest,
   createUserRequest,
@@ -9,89 +9,130 @@ import {
   updateUserRequest,
   usersError,
 } from "../actions/users";
-import { Alert, notification } from "antd";
+import * as api from "../api/users";
+import { Alert, notification, Button } from "antd";
 import EditModal from "./EditModal";
+import useDisclosure from "../hook/useDisclosure";
+import { useNavigate } from "react-router-dom";
+import useListBase from "../api/useListBase";
+import { Api } from "../api/config";
 
-class App extends Component {
-  state = {
-    editingUser: null,
-    isModalVisible: false,
-  };
+const App = () => {
+  const { isOpen, openModal, closeModal } = useDisclosure();
+  const [editingUser, setEditingUser] = useState(null);
 
-  componentDidMount() {
-    this.props.getUsersRequest();
-  }
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  handleSubmit = ({ id, firstName, lastName }) => {
+  const { data } = useListBase(Api.user);
+
+
+  //const { data, handleSubmit } = useListBase(Api.user);
+  // const users = useSelector(state => state.users); //lấy state users từ redux store
+
+  // useEffect(() => {
+  //   dispatch(getUsersRequest());
+
+  //   fetchUsers(); // Gọi hàm để get List
+  // }, [dispatch]);
+
+    // useEffect(() => {
+  //   dispatch(getUsers());
+  // }, [dispatch]);
+
+  console.log("dataa user", data);
+
+
+
+  const handleSubmit = (values) => {
+    const { id } = editingUser || {};
     if (id) {
-      this.props.updateUserRequest({ id, firstName, lastName });
+      updateUserRequest({ id, ...values });
       notification.success({
         message: "User Updated",
         description: "The user has been successfully updated.",
       });
     } else {
-      this.props.createUserRequest({ firstName, lastName });
+      createUserRequest(values);
       notification.success({
         message: "User Created",
         description: "A new user has been successfully created.",
       });
     }
-    this.setState({ editingUser: null, isModalVisible: false });
+    setEditingUser(null);
+    closeModal();
   };
 
-  handleDeleteUserClick = (userId) => {
-    this.props.deleteUserRequest(userId);
+  const handleDeleteUserClick = (userId) => {
+    deleteUserRequest(userId);
     notification.success({
       message: "User Deleted",
       description: "The user has been successfully deleted.",
     });
   };
 
-  handleEditUserClick = (user) => {
-    this.setState({ editingUser: user, isModalVisible: true });
+  const handleEditUserClick = (user) => {
+    // setEditingUser(user);
+    // openModal();
+
+    //navigate(`/user/${user.id}`);
+
+    navigate(`/user/${user.id}`, { state: { user, mode: "Edit" } });
   };
 
-  handleCloseAlert = () => {
-    this.props.usersError({ error: "" });
+  const handleCreate = () => {
+    // setEditingUser(user);
+    // openModal();
+
+    //navigate(`/user/${user.id}`);
+
+    navigate(`/user`, { state: { mode: "Create" } });
   };
 
-  handleCancel = () => {
-    this.setState({ isModalVisible: false });
+  const handleCloseAlert = () => {
+    usersError({ error: "" });
   };
 
-  render() {
-    const { users } = this.props;
-    const { isModalVisible, editingUser } = this.state;
-    return (
-      <div style={{ margin: "0 auto", padding: "20px", maxWidth: "600px" }}>
-        {this.props.users.error && (
-          <Alert
-            type="error"
-            message={this.props.users.error}
-            banner
-            closable
-            onClose={this.handleCloseAlert}
-            style={{ marginBottom: "20px" }}
-          />
-        )}
+  return (
+    <div
+      style={{ margin: "0 auto", padding: "20px", maxWidth: "600px", flex: "" }}
+    >
+      <Alert
+        type="error"
+        message={data.error}
+        banner
+        closable
+        onClose={handleCloseAlert}
+        style={{ marginBottom: "20px" }}
+      />
 
-        <NewUserForm onSubmit={this.handleSubmit} />
-
-        <EditModal
-          visible={isModalVisible}
-          onCancel={this.handleCancel}
-          onSubmit={this.handleSubmit}
-          editingUser={editingUser}
-        />
-        <UserList
-          onDeleteUser={this.handleDeleteUserClick}
-          onEditUser={this.handleEditUserClick}
-          users={users.items}
-        />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: "20px",
+        }}
+      >
+        <Button style={{width : "140px", marginTop: "10px"}} danger onClick={handleCreate}>
+          Create
+        </Button>
       </div>
-    );
-  }
-}
+      {/* <NewUserForm onSubmit={handleSubmit} /> */}
+
+      <EditModal
+        visible={isOpen}
+        onCancel={closeModal}
+        onSubmit={handleSubmit}
+        editingUser={editingUser}
+      />
+      <UserList
+        onDeleteUser={handleDeleteUserClick}
+        onEditUser={handleEditUserClick}
+        users={data.items}
+      />
+    </div>
+  );
+};
 
 export default connect(({ users }) => ({ users }), {
   getUsersRequest,

@@ -8,7 +8,6 @@ const INITIAL_STATE = {
 export default function users(state = INITIAL_STATE, action) {
   switch (action.type) {
     case Types.GET_USERS_SUCCESS: {
-      console.log(action.payload.items);
       return {
         items: action.payload.items,
       };
