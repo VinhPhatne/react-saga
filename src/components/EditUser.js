@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, Input } from "antd";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { createUserRequest, updateUserRequest } from "../actions/users";
-import { notification } from "antd";
-import { useDispatch } from "react-redux";
+import { Button, Form, Input } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
 import useSaveBase from "../hook/useSaveBase";
+import * as userApi from "../api/users";
 
 const EditUser = () => {
   const [form] = Form.useForm();
@@ -16,7 +14,7 @@ const EditUser = () => {
   const { user, mode } = state || {};
   const [isCreating, setIsCreating] = useState(false);
 
-  const saveUser = useSaveBase();
+  const saveApi = useSaveBase(userApi.createUser, userApi.updateUser);
 
   useEffect(() => {
     if (mode === "Edit" && user) {
@@ -33,7 +31,7 @@ const EditUser = () => {
 
   // call handle create/update from useSaveBase
   const handleFinish = (values) => {
-    saveUser(mode, user, values);
+    saveApi(mode, user?.id, values);
   };
 
   return (

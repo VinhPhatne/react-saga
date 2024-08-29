@@ -1,14 +1,6 @@
-import React, { useEffect, useState } from "react";
-import NewUserForm from "./NewUserForm";
+import React from "react";
 import UserList from "./UserList";
-import { connect, useDispatch } from "react-redux";
-import {
-  getUsersRequest,
-  createUserRequest,
-  deleteUserRequest,
-  updateUserRequest,
-  usersError,
-} from "../actions/users";
+
 import * as api from "../api/users";
 import { Alert, notification, Button } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -22,8 +14,8 @@ const App = () => {
 
   console.log("dataa user", data);
 
-  const handleDeleteUserClick = (userId) => {
-    deleteUserRequest(userId);
+  const handleDeleteUserClick = async (userId) => {
+    await api.deleteUser(userId);
     notification.success({
       message: "User Deleted",
       description: "The user has been successfully deleted.",
@@ -35,11 +27,11 @@ const App = () => {
   };
 
   const handleCreate = () => {
-    navigate(`/user`, { state: { mode: "Create" } });
+    navigate(`/user/create`, { state: { mode: "Create" } });
   };
 
   const handleCloseAlert = () => {
-    usersError({ error: "" });
+    //usersError({ error: "" });
   };
 
   return (
@@ -89,10 +81,4 @@ const App = () => {
   );
 };
 
-export default connect(({ users }) => ({ users }), {
-  getUsersRequest,
-  createUserRequest,
-  deleteUserRequest,
-  updateUserRequest,
-  usersError,
-})(App);
+export default App;

@@ -1,38 +1,48 @@
-import { useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { createUserRequest, updateUserRequest } from "../actions/users";
 import { notification } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const useSaveBase = () => {
-  const dispatch = useDispatch();
+const useSaveBase = (createApi, updateApi) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const saveUser = useCallback(
-    (mode, user, values) => {
-      if (mode === "Edit" && user?.id) {
-        dispatch(updateUserRequest({ id: user.id, ...values }));
-        console.log("Edited User data:", { id: user?.id, ...values });
+  // lấy phần đầu tiên của URL, ví dụ: 'user' hoặc 'news'
+  const getCurrentPage = () => {
+    const pathSegments = location.pathname.split("/").filter(Boolean);
+    return pathSegments[0]; 
+  };
+
+  const saveApi = async (mode, objectId, values) => {
+    try {
+      if (mode === "Edit" && objectId) {
+        // Gọi API update
+        const response = await updateApi(objectId, values);
+        console.log("Updated :", response.data);
         notification.success({
-          message: "User Updated",
-          description: "The user has been successfully updated.",
+          message: "Updated",
+          description: "The object has been successfully updated.",
         });
-        console.log("Edited User data:", { id: user.id, ...values });
       } else {
-        dispatch(createUserRequest(values));
-        console.log("Created User data:", { values });
+        // Gọi API create
+        const response = await createApi(values);
+        console.log("Created :", response.data);
         notification.success({
-          message: "User Created",
-          description: "A new user has been successfully created.",
+          message: "Object ",
+          description: "A new object has been successfully created.",
         });
-        console.log("Created User data:", values);
       }
+      // Lấy Url hiện tại và trả về /user hoặc news hoặc khác 
+      const currentPage = getCurrentPage();
+      navigate(`/${currentPage}`);
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Operation failed due to CORS issue or network error.",
+      });
       navigate("/");
-    },
-    [dispatch, navigate]
-  );
+    }
+  };
 
-  return saveUser;
+  return saveApi;
 };
 
 export default useSaveBase;

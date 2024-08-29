@@ -14,6 +14,7 @@ const useListBase = (apiConfig) => {
 
   const fetchData = async () => {
     try {
+      // Call API Get User
       const res = await api.getUsers();
       setData(res.data.data);
       setFilteredData(res.data.data);
