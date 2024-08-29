@@ -1,12 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Api } from "./config";
-import * as api from "./users";
+import { Api } from "../api/config";
+import * as api from "../api/users";
 
 const useListBase = (apiConfig) => {
   const [data, setData] = useState([]);
 
-  const [filteredData, setFilteredData] = useState([]); 
+  const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -22,23 +22,14 @@ const useListBase = (apiConfig) => {
     fetchData();
   }, [apiConfig]);
 
-  const handleSubmit = ({ firstName, lastName }) => {
-    return axios
-      .post(Api.create.url, { firstName, lastName })
-      .then(() => {
-        fetchData();
-      })
-      .catch((e) => {});
-  };
-
-   const handleFilterChange = (filter) => {
+  const handleFilterChange = (filter) => {
     const filtered = data.filter(
       (user) =>
         user.firstName.toLowerCase().includes(filter.toLowerCase()) ||
         user.lastName.toLowerCase().includes(filter.toLowerCase())
     );
     setFilteredData(filtered);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const paginate = (page) => {
@@ -51,9 +42,8 @@ const useListBase = (apiConfig) => {
   );
 
   return {
-    data: paginatedData, 
+    data: paginatedData,
     total: filteredData.length,
-    handleSubmit,
     handleFilterChange,
     paginate,
     currentPage,
