@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, Input } from "antd";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { createUserRequest, updateUserRequest } from "../actions/users";
-import { notification } from "antd";
-import { useDispatch } from "react-redux";
+import { Button, Form, Input } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+import useSaveBase from "../hook/useSaveBase";
+import * as userApi from "../api/users";
 
 const EditUser = () => {
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
 
   const { state } = location;
   const { user, mode } = state || {};
   const [isCreating, setIsCreating] = useState(false);
+
+  const pageName = location.pathname.split("/")[1];
+
+  const saveApi = useSaveBase(userApi.createUser, userApi.updateUser);
 
   useEffect(() => {
     if (mode === "Edit" && user) {
@@ -28,42 +30,10 @@ const EditUser = () => {
       setIsCreating(true);
     }
   }, [mode, user, form]);
-  //   if (mode === "Edit" && user?.id) {
-  //     createUserRequest(values);
-  //     notification.success({
-  //       message: "User Created",
-  //       description: "A new user has been successfully created.",
-  //     });
-  //   } else {
-  //     const { id } = user || {};
-  //     updateUserRequest({ id, ...values });
-  //     notification.success({
-  //       message: "User Updated",
-  //       description: "The user has been successfully updated.",
-  //     });
-  //   }
-  //   form.resetFields();
-  //   console.log("User data:", { id: user?.id, ...values });
-  //   navigate("/");
-  // };
 
+  // call handle create/update from useSaveBase
   const handleFinish = (values) => {
-    if (mode === "Edit" && user?.id) {
-      dispatch(updateUserRequest({ id: user.id, ...values }));
-      console.log("Edited User data:", { id: user?.id, ...values });
-      notification.success({
-        message: "User Updated",
-        description: "The user has been successfully updated.",
-      });
-    } else {
-      dispatch(createUserRequest(values));
-      console.log("Created User data:", { values });
-      notification.success({
-        message: "User Created",
-        description: "A new user has been successfully created.",
-      });
-    }
-    navigate("/");
+    saveApi(mode, user?.id, values, pageName);
   };
 
   return (

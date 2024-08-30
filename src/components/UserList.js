@@ -1,10 +1,12 @@
 import React from "react";
 import { List, Button, Popconfirm, Pagination } from "antd";
-import useListBase from "../api/useListBase";
+import useListBase from "../hook/useListBase";
 import { Api } from "../api/config";
 
 const UserList = ({ users, onDeleteUser, onEditUser, editingUser }) => {
-  const { data, total, paginate, currentPage } = useListBase(Api.user);
+  const { data, pagination, setPagination } = useListBase(
+    Api.user
+  );
   const confirm = (userId) => {
     console.log(userId);
     onDeleteUser(userId);
@@ -17,7 +19,8 @@ const UserList = ({ users, onDeleteUser, onEditUser, editingUser }) => {
 
   return (
     <>
-      <List style={{marginTop: "20px", marginBottom: "20px"}}
+      <List
+        style={{ marginTop: "20px", marginBottom: "20px" }}
         dataSource={data.sort((a, b) => {
           if (a.firstName > b.firstName) {
             return 1;
@@ -63,11 +66,11 @@ const UserList = ({ users, onDeleteUser, onEditUser, editingUser }) => {
           </List.Item>
         )}
       />
-      <Pagination
-        current={currentPage}
-        total={total}
-        pageSize={5}
-        onChange={paginate}
+     <Pagination
+        current={pagination.currentPage}
+        total={pagination.total}
+        pageSize={pagination.pageSize}
+        onChange={(page) => setPagination((prev) => ({ ...prev, currentPage: page }))}
         align="end"
       />
     </>
