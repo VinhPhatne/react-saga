@@ -14,6 +14,8 @@ const EditUser = () => {
   const { user, mode } = state || {};
   const [isCreating, setIsCreating] = useState(false);
 
+  const pageName = location.pathname.split("/")[1];
+
   const saveApi = useSaveBase(userApi.createUser, userApi.updateUser);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const EditUser = () => {
 
   // call handle create/update from useSaveBase
   const handleFinish = (values) => {
-    saveApi(mode, user?.id, values);
+    saveApi(mode, user?.id, values, pageName);
   };
 
   return (

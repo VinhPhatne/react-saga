@@ -5,13 +5,14 @@ const useSaveBase = (createApi, updateApi) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // lấy phần đầu tiên của URL, ví dụ: 'user' hoặc 'news'
-  const getCurrentPage = () => {
-    const pathSegments = location.pathname.split("/").filter(Boolean);
-    return pathSegments[0]; 
+  const getListUrl = (pageName) => {
+    if (pageName) {
+      return `/${pageName}`;
+    }
+    return navigate(-1);
   };
 
-  const saveApi = async (mode, objectId, values) => {
+  const saveApi = async (mode, objectId, values, pageName) => {
     try {
       if (mode === "Edit" && objectId) {
         // Gọi API update
@@ -30,15 +31,15 @@ const useSaveBase = (createApi, updateApi) => {
           description: "A new object has been successfully created.",
         });
       }
-      // Lấy Url hiện tại và trả về /user hoặc news hoặc khác 
-      const currentPage = getCurrentPage();
-      navigate(`/${currentPage}`);
+      // Lấy Url hiện tại và trả về /user hoặc news hoặc khác
+      const listUrl = getListUrl(pageName);
+      navigate(listUrl);
     } catch (error) {
       notification.error({
         message: "Error",
         description: "Operation failed due to CORS issue or network error.",
       });
-      navigate("/");
+      navigate(-1);
     }
   };
 
