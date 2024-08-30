@@ -5,7 +5,7 @@ const url = "https://mithril-rem.fly.dev/api";
 
 export const Api = {
   user: {
-    getUser: {
+    getList: {
       url: `${url}/users`,
       method: "GET",
       headers: baseHeader,

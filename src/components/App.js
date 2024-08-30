@@ -1,25 +1,39 @@
 import React from "react";
 import UserList from "./UserList";
-
-import * as api from "../api/users";
 import { Alert, notification, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import useListBase from "../hook/useListBase";
 import { Api } from "../api/config";
+import useFetch from "../hook/useFetch";
 
 const App = () => {
   const navigate = useNavigate();
 
   const { data } = useListBase(Api.user);
 
+  const { fetchData } = useFetch(Api.user);
+
   console.log("dataa user", data);
 
   const handleDeleteUserClick = async (userId) => {
-    await api.deleteUser(userId);
-    notification.success({
-      message: "User Deleted",
-      description: "The user has been successfully deleted.",
-    });
+    try {
+      const response = await fetchData("delete", { id: userId });
+      if (response) {
+        console.log("delete user", userId);
+        notification.success({
+          message: "User Deleted",
+          description: "The user has been successfully deleted.",
+        });
+      } else {
+        throw new Error("Failed to delete the user. No response from the server.");
+      }
+    } catch (error) {
+      console.error("Error while deleting user:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to delete the user.",
+      });
+    }
   };
 
   const handleEditUserClick = (user) => {

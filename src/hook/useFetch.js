@@ -1,21 +1,30 @@
 import { useState } from "react";
 import axios from "axios";
-import { Api } from "../api/config"; 
 
-const useFetch = (pageName) => {
+const useFetch = (config) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  const fetchData = async (endpoint, id = null, payload = null) => {
+  const fetchData = async (endpoint, pathParams = {}, requestData = null) => {
     try {
-      const config = Api[pageName][endpoint];
-      const url = id ? config.url.replace('{id}', id) : config.url;
+      let endpointConfig = config[endpoint];
+
+      // Nếu endpointConfig là một hàm, cần gọi nó với pathParams để lấy config đúng
+      if (typeof endpointConfig === "function") {
+        endpointConfig = endpointConfig(pathParams.id);
+      }
+
+      if (!endpointConfig) {
+        throw new Error(`Endpoint ${endpoint} not found in config`);
+      }
+
       const response = await axios({
-        url,
-        method: config.method,
-        headers: config.headers,
-        data: payload,
+        url: endpointConfig.url,
+        method: endpointConfig.method,
+        headers: endpointConfig.headers,
+        data: requestData,
       });
+
       setData(response.data);
       return response.data;
     } catch (err) {

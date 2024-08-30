@@ -1,6 +1,5 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import * as api from "../api/users";
+import { useEffect, useState } from "react";
+import useFetch from "./useFetch";
 
 const useListBase = (apiConfig) => {
   const [data, setData] = useState([]);
@@ -12,21 +11,25 @@ const useListBase = (apiConfig) => {
     pageSize: 5,
   });
 
-  const fetchData = async () => {
+  const { fetchData } = useFetch(apiConfig);
+
+  const fetchUserData = async () => {
     try {
-      // Call API Get User
-      const res = await api.getUsers();
-      setData(res.data.data);
-      setFilteredData(res.data.data);
+      // Gọi API 
+      const res = await fetchData("getList");
+      setData(res.data);
+      setFilteredData(res.data);
       setPagination((prev) => ({
         ...prev,
-        total: res.data.data.length,
+        total: res.data.length,
       }));
-    } catch (e) {}
+    } catch (e) {
+      console.error("Failed to fetch data:", e);
+    }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchUserData();
   }, [apiConfig]);
 
   const paginatedData = filteredData.slice(

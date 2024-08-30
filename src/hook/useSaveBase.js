@@ -1,38 +1,35 @@
 import { notification } from "antd";
 import { useNavigate } from "react-router-dom";
-import useFetch from "../hook/useFetch";
+import useFetch from "./useFetch";
 
-const useSaveBase = (pageName) => {
+const useSaveBase = (config) => {
   const navigate = useNavigate();
-  const { fetchData } = useFetch(pageName);
+  const { fetchData } = useFetch(config);
 
-  const getListUrl = (pageName) => {
-    if (pageName) {
-      return `/${pageName}`;
-    }
-    return navigate(-1);
+  const getListUrl = () => {
+    return config.listUrl || navigate(-1);
   };
 
   const saveApi = async (mode, objectId, values) => {
     try {
       if (mode === "Edit" && objectId) {
-        // Gọi API update
-        const response = await fetchData("update", objectId, values);
-        console.log("Updated :", response.data);
+        // Gọi API update với pathParams
+        const response = await fetchData("update", { id: objectId }, values);
+        console.log("Updated :", response);
         notification.success({
           message: "Updated",
           description: "The object has been successfully updated.",
         });
       } else {
         // Gọi API create
-        const response = await fetchData("create", null, values);
-        console.log("Created :", response.data);
+        const response = await fetchData("create", {}, values);
+        console.log("Created :", response);
         notification.success({
           message: "Created",
           description: "A new object has been successfully created.",
         });
       }
-      const listUrl = getListUrl(pageName);
+      const listUrl = getListUrl();
       navigate(listUrl);
     } catch (error) {
       console.error("Error occurred:", error);

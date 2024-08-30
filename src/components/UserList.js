@@ -4,10 +4,12 @@ import useListBase from "../hook/useListBase";
 import { Api } from "../api/config";
 
 const UserList = ({ onDeleteUser, onEditUser }) => {
-  const { data, pagination, setPagination } = useListBase(Api.user);
+  const config = Api.user;
+  const { data, pagination, setPagination } = useListBase(config);
 
   const confirm = (userId) => {
     onDeleteUser(userId);
+    console.log("Delete user", userId);
     //message.success("Deleted user");
   };
 
@@ -69,7 +71,9 @@ const UserList = ({ onDeleteUser, onEditUser }) => {
         current={pagination.currentPage}
         total={pagination.total}
         pageSize={pagination.pageSize}
-        onChange={(page) => setPagination((prev) => ({ ...prev, currentPage: page }))}
+        onChange={(page) =>
+          setPagination((prev) => ({ ...prev, currentPage: page }))
+        }
         align="end"
       />
     </>
