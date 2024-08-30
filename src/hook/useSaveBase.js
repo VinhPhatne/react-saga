@@ -1,40 +1,38 @@
 import { notification } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useFetch from "./useFetch";
 
-const useSaveBase = (createApi, updateApi) => {
+const useSaveBase = (config) => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { fetchData } = useFetch(config);
 
-  const getListUrl = (pageName) => {
-    if (pageName) {
-      return `/${pageName}`;
-    }
-    return navigate(-1);
+  const getListUrl = () => {
+    return config.listUrl || navigate(-1);
   };
 
-  const saveApi = async (mode, objectId, values, pageName) => {
+  const saveApi = async (mode, objectId, values) => {
     try {
       if (mode === "Edit" && objectId) {
-        // Gọi API update
-        const response = await updateApi(objectId, values);
-        console.log("Updated :", response.data);
+        // Gọi API update với pathParams
+        const response = await fetchData("update", { id: objectId }, values);
+        console.log("Updated :", response);
         notification.success({
           message: "Updated",
           description: "The object has been successfully updated.",
         });
       } else {
         // Gọi API create
-        const response = await createApi(values);
-        console.log("Created :", response.data);
+        const response = await fetchData("create", {}, values);
+        console.log("Created :", response);
         notification.success({
-          message: "Object ",
+          message: "Created",
           description: "A new object has been successfully created.",
         });
       }
-      // Lấy Url hiện tại và trả về /user hoặc news hoặc khác
-      const listUrl = getListUrl(pageName);
+      const listUrl = getListUrl();
       navigate(listUrl);
     } catch (error) {
+      console.error("Error occurred:", error);
       notification.error({
         message: "Error",
         description: "Operation failed due to CORS issue or network error.",

@@ -3,15 +3,16 @@ import { List, Button, Popconfirm, Pagination } from "antd";
 import useListBase from "../hook/useListBase";
 import { Api } from "../api/config";
 
-const UserList = ({ users, onDeleteUser, onEditUser, editingUser }) => {
-  const { data, pagination, setPagination } = useListBase(
-    Api.user
-  );
+const UserList = ({ onDeleteUser, onEditUser }) => {
+  const config = Api.user;
+  const { data, pagination, setPagination } = useListBase(config);
+
   const confirm = (userId) => {
-    console.log(userId);
     onDeleteUser(userId);
+    console.log("Delete user", userId);
     //message.success("Deleted user");
   };
+
   const cancel = (e) => {
     console.log(e);
     //message.error("Cancel Delete");
@@ -66,11 +67,13 @@ const UserList = ({ users, onDeleteUser, onEditUser, editingUser }) => {
           </List.Item>
         )}
       />
-     <Pagination
+      <Pagination
         current={pagination.currentPage}
         total={pagination.total}
         pageSize={pagination.pageSize}
-        onChange={(page) => setPagination((prev) => ({ ...prev, currentPage: page }))}
+        onChange={(page) =>
+          setPagination((prev) => ({ ...prev, currentPage: page }))
+        }
         align="end"
       />
     </>
