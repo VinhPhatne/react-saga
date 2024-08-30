@@ -26,4 +26,26 @@ export const Api = {
       headers: baseHeader,
     }),
   },
+  news: {
+    getList: {
+      url: `${url}/users`,
+      method: "GET",
+      headers: baseHeader,
+    },
+    create: {
+      url: `${url}/users`,
+      method: "POST",
+      headers: baseHeader,
+    },
+    update: (userId) => ({
+      url: `${url}/users/${userId}`,
+      method: "PUT",
+      headers: baseHeader,
+    }),
+    delete: (userId) => ({
+      url: `${url}/users/${userId}`,
+      method: "DELETE",
+      headers: baseHeader,
+    }),
+  },
 };

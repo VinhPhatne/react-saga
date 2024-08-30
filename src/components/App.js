@@ -65,17 +65,9 @@ const App = () => {
         </Button>
       </div>
 
-      {/* <NewUserForm onSubmit={handleSubmit} /> */}
-      {/* <EditModal
-        visible={isOpen}
-        onCancel={closeModal}
-        onSubmit={handleSubmit}
-        editingUser={editingUser}
-      /> */}
       <UserList
         onDeleteUser={handleDeleteUserClick}
         onEditUser={handleEditUserClick}
-        users={data.items}
       />
     </div>
   );

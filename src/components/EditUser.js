@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Input } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import useSaveBase from "../hook/useSaveBase";
-import * as userApi from "../api/users";
 
 const EditUser = () => {
   const [form] = Form.useForm();
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -16,7 +14,7 @@ const EditUser = () => {
 
   const pageName = location.pathname.split("/")[1];
 
-  const saveApi = useSaveBase(userApi.createUser, userApi.updateUser);
+  const saveApi = useSaveBase(pageName);
 
   useEffect(() => {
     if (mode === "Edit" && user) {
@@ -33,7 +31,7 @@ const EditUser = () => {
 
   // call handle create/update from useSaveBase
   const handleFinish = (values) => {
-    saveApi(mode, user?.id, values, pageName);
+    saveApi(mode, user?.id, values);
   };
 
   return (
